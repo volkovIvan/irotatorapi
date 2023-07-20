@@ -1,19 +1,34 @@
 package com.ivanvolkov.imagerotatorapi.web;
 
+import com.ivanvolkov.imagerotatorapi.domain.FileUploaderService;
+import com.ivanvolkov.imagerotatorapi.domain.TaskDto;
+import com.ivanvolkov.imagerotatorapi.domain.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/rotate")
 public class ImageRotatorController {
 
-    @PostMapping(path="rotate")
-    public ResponseEntity handleFileUpload(@RequestParam("file") MultipartFile file) {
+    private final TaskService taskService;
+    private final FileUploaderService fileUploaderService;
 
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<String> handleFileUpload(@RequestBody MultipartFile file) throws IOException {
+        String taskId = this.fileUploaderService.handleFileUpload(file);
+        return ResponseEntity.ok(taskId);
     }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity getTaskInfo(@RequestParam("taskid") String taskId) {
+        TaskDto taskDto = this.taskService.getTaskInfo(taskId);
+        return taskDto == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(taskDto);
+    }
+
 }

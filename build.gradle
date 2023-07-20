@@ -30,6 +30,8 @@ dependencies {
     implementation 'com.azure.spring:spring-cloud-azure-starter'
     implementation 'com.azure.spring:spring-cloud-azure-starter-data-cosmos'
     implementation 'com.azure.spring:spring-cloud-azure-starter-storage'
+    implementation 'com.azure.spring:spring-cloud-azure-stream-binder-servicebus'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
