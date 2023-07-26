@@ -1,7 +1,7 @@
 package com.ivanvolkov.imagerotatorapi.web;
 
 import com.ivanvolkov.imagerotatorapi.domain.FileUploaderService;
-import com.ivanvolkov.imagerotatorapi.domain.TaskDto;
+import com.ivanvolkov.imagerotatorapi.domain.TaskReadDto;
 import com.ivanvolkov.imagerotatorapi.domain.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,8 +26,8 @@ public class ImageRotatorController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity getTaskInfo(@RequestParam("taskid") String taskId) {
-        TaskDto taskDto = this.taskService.getTaskInfo(taskId);
+    public ResponseEntity<TaskReadDto> getTaskInfo(@RequestParam("taskid") String taskId) {
+        TaskReadDto taskDto = this.taskService.getTaskInfo(taskId);
         return taskDto == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(taskDto);
     }
 

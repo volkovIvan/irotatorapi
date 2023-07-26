@@ -13,13 +13,12 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
 
     @Override
-    public TaskDto getTaskInfo(String taskId) {
+    public TaskReadDto getTaskInfo(String taskId) {
         Optional<Task> task = this.taskRepository.findById(taskId);
         if(task.isPresent()) {
-            TaskDto taskDto = new TaskDto();
+            TaskReadDto taskDto = new TaskReadDto();
             taskDto.setId(task.get().getId());
             taskDto.setFileName(task.get().getFileName());
-            taskDto.setOriginalFilePath(task.get().getOriginalFilePath());
             taskDto.setProcessedFilePath(task.get().getProcessedFilePath());
             taskDto.setState(task.get().getState());
             return taskDto;
