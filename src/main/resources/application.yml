@@ -1,33 +1,19 @@
 spring:
   servlet:
     multipart:
-      max-file-size: 5MB
+      max-file-size: 4MB
   cloud:
-    function:
-      definition: supply
-    stream:
-      bindings:
-        supply-out-0:
-          destination: ${IMAGE_TASK_TOPIC_NAME}
-      servicebus:
-        bindings:
-          supply-out-0:
-            producer:
-              entity-type: topic
-    azure:
-      keyvault:
-        secret:
-          property-source-enabled: true
-          property-sources:
-            - name: ${KEY_VAULT_PROPERTY_SOURCE_NAME}
-              endpoint: ${KEY_VAULT_PROPERTY_SOURCE_ENDPOINT}
-      servicebus:
-        namespace: ${irotator-service-bus-namespace}
-      cosmos:
-        endpoint: ${irotator-cosmos-endpoint}
-        key: ${irotator-cosmos-key}
-        database: ${irotator-cosmos-database}
-      storage:
-        blob:
-          container-name: ${irotator-blob-storage-container}
-          account-name: ${irotator-blob-storage-account-name}
+    aws:
+      region:
+        static: eu-central-1
+      dynamodb:
+        endpoint: ${DYNAMO_DB_ENDPOINT}
+aws:
+  bucket-name: ${BUCKET_NAME}
+  task-queue-sqs: ${TASK_QUEUE_SQS}
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true

@@ -1,8 +1,10 @@
 package com.ivanvolkov.imagerotatorapi.data;
 
-import com.azure.spring.data.cosmos.repository.CosmosRepository;
-import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
-@Repository
-public interface TaskRepository extends CosmosRepository<Task, String> {
+public interface TaskRepository {
+
+    Task save(Task task);
+
+    Optional<Task> getTask(String id);
 }

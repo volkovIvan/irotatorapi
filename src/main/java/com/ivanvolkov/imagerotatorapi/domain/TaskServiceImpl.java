@@ -14,7 +14,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskReadDto getTaskInfo(String taskId) {
-        Optional<Task> task = this.taskRepository.findById(taskId);
+        Optional<Task> task = this.taskRepository.getTask(taskId);
         if(task.isPresent()) {
             TaskReadDto taskDto = new TaskReadDto();
             taskDto.setId(task.get().getId());

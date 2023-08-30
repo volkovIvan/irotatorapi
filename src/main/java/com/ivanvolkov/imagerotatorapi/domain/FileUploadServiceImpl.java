@@ -1,16 +1,15 @@
 package com.ivanvolkov.imagerotatorapi.domain;
 
-import com.ivanvolkov.imagerotatorapi.azure.AzureBlobService;
+import com.ivanvolkov.imagerotatorapi.aws.AwsS3Service;
 import com.ivanvolkov.imagerotatorapi.data.Task;
 import com.ivanvolkov.imagerotatorapi.data.TaskRepository;
 import com.ivanvolkov.imagerotatorapi.data.TaskState;
+import io.awspring.cloud.sqs.operations.SqsTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Sinks;
 import java.io.IOException;
 
 @Service
@@ -18,25 +17,25 @@ import java.io.IOException;
 @Slf4j
 public class FileUploadServiceImpl implements FileUploaderService {
 
-    private final AzureBlobService azureBlobService;
+    @Value("${aws.task-queue-sqs}")
+    private String taskQueueEndpoint;
+
+    private final AwsS3Service awsS3Service;
     private final TaskRepository taskRepository;
-    private final Sinks.Many<Message<TaskMessage>> many;
+    private final SqsTemplate sqsTemplate;
 
     @Override
     public String handleFileUpload(MultipartFile file) throws IOException {
         log.info("started uploading file");
         Task task = new Task();
         task.setState(TaskState.CREATED);
-        String path = azureBlobService.upload(file);
+        String path = awsS3Service.upload(file);
         log.info("Uploaded file");
         task.setFileName(file.getOriginalFilename());
         task.setOriginalFilePath(path);
         task = taskRepository.save(task);
         log.info("Saved task with id {}", task.getId());
-        TaskMessage taskMessage = new TaskMessage();
-        taskMessage.setId(task.getId());
-        taskMessage.setFileSize(file.getSize());
-        many.emitNext(MessageBuilder.withPayload(taskMessage).build(), Sinks.EmitFailureHandler.FAIL_FAST);
+        sqsTemplate.send(taskQueueEndpoint, task.getId());
         return task.getId();
     }
 }
